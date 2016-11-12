@@ -4,38 +4,20 @@ var path = require('path');
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 
+var styleChoice = {
+    css: 'Css',
+    less: 'Less'
+}
+
 var KoGenerator = yeoman.generators.Base.extend({
   init: function () {
     this.pkg = require('../package.json');
 
     this.on('end', function () {
       if (!this.options['skip-install']) {
-        // Figure out whether we have an internet connection. If not, need to
-        // pass --offline to bower otherwise it won't fall back on cache.
-        require('dns').resolve('example.com', function(isOffline) {
-          console.log('Installing dependencies in ' + (isOffline ? 'offline' : 'online') + ' mode...');
-          if (isOffline) {
-            // Patch bowerInstall to pass --offline
-            this.bowerInstall = (function(originalFunction) {
-              return function(paths, options, cb) {
-                options = options || {};
-                options.offline = true;
-                return originalFunction.call(this, paths, options, cb);
-              };
-            })(this.bowerInstall);
-          }
+          console.log('Installing dependencies');
 
-          this.installDependencies();
-
-          if (this.includeTests) {
-            // Install test dependencies too
-            var bowerArgs = ['install'];
-            if (isOffline) {
-              bowerArgs.push('--offline');
-            }
-            this.spawnCommand('bower', bowerArgs, { cwd: 'test' });
-          }
-        }.bind(this));
+          this.npmInstall();
       }
     });
   },
@@ -43,47 +25,52 @@ var KoGenerator = yeoman.generators.Base.extend({
   askFor: function () {
     var done = this.async();
     this.log(this.yeoman);
-    this.log(chalk.magenta('You\'re using the fantastic Knockout app generator.'));
+    this.log(chalk.magenta('Welcome! This generator will create a knockout-project for you.'));
 
     var prompts = [{
-      name: 'name',
-      message: 'What\'s the name of your new site?',
-      default: path.basename(process.cwd())
+        name: 'name',
+        message: 'What\'s the name of your new site?',
+        default: path.basename(process.cwd())
     }, {
-      type: 'confirm',
-      name: 'includeTests',
-      message: 'Do you want to include automated tests, using Jasmine and Karma?',
-      default: true
+        type: 'confirm',
+        name: 'includeTests',
+        message: 'Do you want to include automated tests, using Jasmine and Karma?',
+        default: true
+    }, {
+        type: 'list',
+        name: 'styleLang',
+        message: "What stylesheet language do you want to use?",
+        choices: [styleChoice.css, styleChoice.less]
     }];
 
     this.prompt(prompts, function (props) {
-      this.longName = props.name;
-      this.slugName = this._.slugify(this.longName);
-      this.includeTests = props.includeTests;
-      done();
+        this.longName = props.name;
+        this.slugName = this._.slugify(this.longName);
+        this.usesLess = props.styleLang === 'Less';
+        this.includeTests = props.includeTests;
+        done();
     }.bind(this));
   },
 
   templating: function () {
-    this._processDirectory('src', 'src');
-    this.template('_package.json', 'package.json');
-    this.template('_bower.json', 'bower.json');
-    this.template('_gulpfile.js', 'gulpfile.js');
-    this.template('_gitignore', '.gitignore');
-    this.copy('bowerrc', '.bowerrc');
-    this.copy('jsconfig.json');
+      var excludeExtension = this.usesLess ? '.css' : '.less';
+      this._processDirectory('src', 'src', excludeExtension);
+      this.template('_package.json', 'package.json');
+      this.template('_gulpfile.js', 'gulpfile.js');
+      this.template('_gitignore', '.gitignore');
 
-    if (this.includeTests) {
-      // Set up tests
-      this._processDirectory('test', 'test');
-      this.copy('bowerrc_test', 'test/.bowerrc');
-      this.copy('karma.conf.js');
-    }
+      if (this.includeTests) {
+          // Set up tests
+          this._processDirectory('test', 'test');
+          this.copy('karma.conf.js');
+      }
   },
 
-  _processDirectory: function(source, destination) {
+  _processDirectory: function(source, destination, excludeExtension) {
     var root = this.isPathAbsolute(source) ? source : path.join(this.sourceRoot(), source);
-    var files = this.expandFiles('**', { dot: true, cwd: root });
+    var files = this.expandFiles('**', { dot: true, cwd: root }).filter(function(filename){
+        return !excludeExtension || path.extname(filename) !== excludeExtension;
+    });
 
     for (var i = 0; i < files.length; i++) {
         var f = files[i];

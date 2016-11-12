@@ -1,19 +1,18 @@
 // Node modules
-var fs = require('fs'), vm = require('vm'), merge = require('deeply'), chalk = require('chalk'), es = require('event-stream'), path = require('path'), url = require('url');
+var fs = require('fs'), vm = require('vm'), merge = require('deeply'), chalk = require('chalk'), es = require('event-stream');
 
 // Gulp and plugins
-var gulp = require('gulp'), rjs = require('gulp-requirejs-bundler'), concat = require('gulp-concat'), clean = require('gulp-clean'), filter = require('gulp-filter'),
-    replace = require('gulp-replace'), uglify = require('gulp-uglify'), htmlreplace = require('gulp-html-replace'),
-    connect = require('gulp-connect'), babelCore = require('babel-core'), babel = require('gulp-babel'), objectAssign = require('object-assign');
+var gulp = require('gulp'), rjs = require('gulp-requirejs-bundler'), concat = require('gulp-concat'), clean = require('gulp-clean'),
+    replace = require('gulp-replace'), uglify = require('gulp-uglify'), htmlreplace = require('gulp-html-replace')<% if(usesLess) { %>, less = require('gulp-less')<% } %>;
 
 // Config
-var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require.config.js') + '; require;'),
+var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require.config.js') + '; require;');
     requireJsOptimizerConfig = merge(requireJsRuntimeConfig, {
         out: 'scripts.js',
         baseUrl: './src',
         name: 'app/startup',
         paths: {
-            requireLib: 'bower_modules/requirejs/require'
+            requireLib: '../node_modules/requirejs/require'
         },
         include: [
             'requireLib',
@@ -28,61 +27,52 @@ var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require
             // 'bundle-name': [ 'some/module', 'another/module' ],
             // 'another-bundle-name': [ 'yet-another-module' ]
         }
-    }),
-    transpilationConfig = {
-        root: 'src',
-        skip: ['bower_modules/**', 'app/require.config.js'],
-        babelConfig: {
-            modules: 'amd',
-            sourceMaps: 'inline'
-        }
-    },
-    babelIgnoreRegexes = transpilationConfig.skip.map(function(item) {
-        return babelCore.util.regexify(item);
     });
 
-// Pushes all the source files through Babel for transpilation
-gulp.task('js:babel', function() {
-    return gulp.src(requireJsOptimizerConfig.baseUrl + '/**')
-        .pipe(es.map(function(data, cb) {
-            if (!data.isNull()) {
-                babelTranspile(data.relative, function(err, res) {
-                    if (res) {
-                        data.contents = new Buffer(res.code);
-                    }
-                    cb(err, data);
-                });
-            } else {
-                cb(null, data);
-            }
-        }))
-        .pipe(gulp.dest('./temp'));
-});
-
 // Discovers all AMD dependencies, concatenates together all required .js files, minifies them
-gulp.task('js:optimize', ['js:babel'], function() {
-    var config = objectAssign({}, requireJsOptimizerConfig, { baseUrl: 'temp' });
-    return rjs(config)
+gulp.task('js', function () {
+    return rjs(requireJsOptimizerConfig)
         .pipe(uglify({ preserveComments: 'some' }))
-        .pipe(gulp.dest('./dist/'));    
-})
-
-// Builds the distributable .js files by calling Babel then the r.js optimizer
-gulp.task('js', ['js:optimize'], function () {
-    // Now clean up
-    return gulp.src('./temp', { read: false }).pipe(clean());
+        .pipe(gulp.dest('./dist/'));
+});
+<% if(usesLess) { %>
+// Transpiles less -> css and minifies, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
+gulp.task('less', function(){
+    return gulp.src('./src/less/style.less')
+        .pipe(less({compress: true}))
+        .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/'))
+        .pipe(concat('css.css'))
+        .pipe(gulp.dest('./dist/'));
+});
+ // Moves the bootstrap fonts to the dist-folder
+gulp.task('fonts', function(){
+    return gulp.src('./node_modules/bootstrap/fonts/*', { base: './node_modules/bootstrap/components-bootstrap/' })
+        .pipe(gulp.dest('./dist/fonts'));
 });
 
-// Concatenates CSS files, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
+gulp.task('devLess', function () {
+   return gulp.src('./src/less/style.less')
+       .pipe(less())
+       .pipe(concat('style.css'))
+       .pipe(gulp.dest('./src/css/'));
+});
+
+gulp.task('watch', function(){
+    gulp.watch('./src/less/style.less', ['devLess']);
+});
+<% } else { %>
+    // Concatenates CSS files, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
 gulp.task('css', function () {
-    var bowerCss = gulp.src('src/bower_modules/components-bootstrap/css/bootstrap.min.css')
+    var bowerCss = gulp.src('./node_modules/bootstrap/dist/css/bootstrap.min.css')
             .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/')),
         appCss = gulp.src('src/css/*.css'),
         combinedCss = es.concat(bowerCss, appCss).pipe(concat('css.css')),
-        fontFiles = gulp.src('./src/bower_modules/components-bootstrap/fonts/*', { base: './src/bower_modules/components-bootstrap/' });
+        fontFiles = gulp.src('./node_modules/bootstrap/fonts/*', { base: './node_modules/bootstrap/components-bootstrap/' });
     return es.concat(combinedCss, fontFiles)
         .pipe(gulp.dest('./dist/'));
 });
+<% } %>
+
 
 // Copies index.html, replacing <script> and <link> tags to reference production URLs
 gulp.task('html', function() {
@@ -100,44 +90,7 @@ gulp.task('clean', function() {
         .pipe(clean());
 });
 
-// Starts a simple static file server that transpiles ES6 on the fly to ES5
-gulp.task('serve:src', function() {
-    return connect.server({
-        root: transpilationConfig.root,
-        middleware: function(connect, opt) {
-            return [
-                 function (req, res, next) {                     
-                     var pathname = path.normalize(url.parse(req.url).pathname);
-                     babelTranspile(pathname, function(err, result) {
-                        if (err) {
-                            next(err);
-                        } else if (result) {
-                            res.setHeader('Content-Type', 'application/javascript');
-                            res.end(result.code);
-                        } else {
-                            next();
-                        }
-                     });
-                 }
-            ];
-        }
-    });
-});
-
-// After building, starts a trivial static file server
-gulp.task('serve:dist', ['default'], function() {
-    return connect.server({ root: './dist' });
-});
-
-function babelTranspile(pathname, callback) {
-    if (babelIgnoreRegexes.some(function (re) { return re.test(pathname); })) return callback();
-    if (!babelCore.canCompile(pathname)) return callback();
-    var src  = path.join(transpilationConfig.root, pathname);
-    var opts = objectAssign({ sourceFileName: '/source/' + pathname }, transpilationConfig.babelConfig);
-    babelCore.transformFile(src, opts, callback);
-}
-
-gulp.task('default', ['html', 'js', 'css'], function(callback) {
+gulp.task('default', ['html', 'js', <% if(usesLess) { %>'less', 'fonts'<% } else { %>'css'<% } %>], function(callback) {
     callback();
     console.log('\nPlaced optimized files in ' + chalk.magenta('dist/\n'));
 });

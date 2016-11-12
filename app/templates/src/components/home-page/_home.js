@@ -1,14 +1,13 @@
-import ko from 'knockout';
-import homeTemplate from 'text!./home.html';
+define(["knockout", "text!./home.html"], function(ko, homeTemplate) {
 
-class HomeViewModel {
-    constructor(route) {
-        this.message = ko.observable('Welcome to <%= longName.replace("'", "\\'") %>!');
-    }
-    
-    doSomething() {
-        this.message('You invoked doSomething() on the viewmodel.');
-    }
-}
+  function HomeViewModel(route) {
+    this.message = ko.observable('Welcome to <%= longName.replace("'", "\\'") %>!');
+  }
 
-export default { viewModel: HomeViewModel, template: homeTemplate };
+  HomeViewModel.prototype.doSomething = function() {
+    this.message('You invoked doSomething() on the viewmodel.');
+  };
+
+  return { viewModel: HomeViewModel, template: homeTemplate };
+
+});

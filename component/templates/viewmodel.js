@@ -1,15 +1,13 @@
-import ko from 'knockout';
-import templateMarkup from 'text!./<%= filename %>.html';
+define(['knockout', 'text!./<%= filename %>.html'], function(ko, templateMarkup) {
 
-class <%= viewModelClassName %> {
-    constructor(params) {
-        this.message = ko.observable('Hello from the <%= name %> component!');
-    }
-    
-    dispose() {
-        // This runs when the component is torn down. Put here any logic necessary to clean up,
-        // for example cancelling setTimeouts or disposing Knockout subscriptions/computeds.
-    }
-}
+  function <%= viewModelClassName %>(params) {
+    this.message = ko.observable('Hello from the <%= name %> component!');
+  }
 
-export default { viewModel: <%= viewModelClassName %>, template: templateMarkup };
+  // This runs when the component is torn down. Put here any logic necessary to clean up,
+  // for example cancelling setTimeouts or disposing Knockout subscriptions/computeds.
+  <%= viewModelClassName %>.prototype.dispose = function() { };
+
+  return { viewModel: <%= viewModelClassName %>, template: templateMarkup };
+
+});

@@ -1,6 +1,6 @@
 // require.js looks for the following global when initializing
 var require = {
-    //baseUrl: "",
+    baseUrl: "../src",
     paths: {
         "crossroads":           "../node_modules/crossroads/dist/crossroads.min",
         "hasher":               "../node_modules/hasher/dist/js/hasher.min",

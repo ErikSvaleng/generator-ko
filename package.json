@@ -4,7 +4,7 @@
   "description": "A Yeoman generator that creates a simple starting point for a knockoutjs SPA",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "ersvale/generator-classical-ko",
+  "repository": "ErikSvaleng/generator-classical-ko",
   "author": {
     "name": "Erik Svaleng",
     "email": "",

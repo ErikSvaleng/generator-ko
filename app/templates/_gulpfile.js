@@ -38,7 +38,7 @@ gulp.task('js', function () {
 <% if(usesLess) { %>
 // Transpiles less -> css and minifies, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
 gulp.task('less', function(){
-    return gulp.src('./src/less/style.less')
+    return gulp.src('./src/less/styles.less')
         .pipe(less({compress: true}))
         .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/'))
         .pipe(concat('css.css'))
@@ -51,14 +51,14 @@ gulp.task('fonts', function(){
 });
 
 gulp.task('devLess', function () {
-   return gulp.src('./src/less/style.less')
+   return gulp.src('./src/less/styles.less')
        .pipe(less())
-       .pipe(concat('style.css'))
+       .pipe(concat('styles.css'))
        .pipe(gulp.dest('./src/css/'));
 });
 
 gulp.task('watch', function(){
-    gulp.watch('./src/less/style.less', ['devLess']);
+    gulp.watch('./src/less/styles.less', ['devLess']);
 });
 <% } else { %>
     // Concatenates CSS files, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts

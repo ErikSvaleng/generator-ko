@@ -31,9 +31,9 @@ Navigate your terminal to where you want to scaffold up your starting point. Sho
 Type `yo classical-ko`
 
 Yeoman will start up and ask you some questions:
-1. What's the name of your app
-2. Do you want to include automated tests? (Karma and Jasmine)
-3. What stylesheet language do you want to use? (Css or Less)
+  1. What's the name of your app
+  2. Do you want to include automated tests? (Karma and Jasmine)
+  3. What stylesheet language do you want to use? (Css or Less)
 
 After that, you'll have a small simple app, as a starting point for your project.
 

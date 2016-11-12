@@ -1,6 +1,6 @@
 {
   "name": "generator-classical-ko",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Yeoman generator that creates a simple starting point for a knockoutjs SPA",
   "license": "MIT",
   "main": "app/index.js",

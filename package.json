@@ -1,33 +1,33 @@
 {
-    "name": "generator-classical-ko",
-    "version": "0.1.0",
-    "description": "A Yeoman generator that creates a simple starting point for a knockoutjs SPA",
-    "license": "MIT",
-    "main": "app/index.js",
-    "repository": "ersvale/generator-classical-ko",
-    "author": {
-        "name": "Erik Svaleng",
-        "email": "",
-        "url": "https://github.com/ErikSvaleng"
-    },
-    "engines": {
-        "node": ">=0.10.0"
-    },
-    "scripts": {
-        "test": "mocha"
-    },
-    "files": [
+  "name": "generator-classical-ko",
+  "version": "0.1.1",
+  "description": "A Yeoman generator that creates a simple starting point for a knockoutjs SPA",
+  "license": "MIT",
+  "main": "app/index.js",
+  "repository": "ersvale/generator-classical-ko",
+  "author": {
+    "name": "Erik Svaleng",
+    "email": "",
+    "url": "https://github.com/ErikSvaleng"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
     "app",
     "component"
   ],
-    "keywords": [
+  "keywords": [
     "yeoman-generator"
   ],
-    "dependencies": {
-        "yeoman-generator": "~0.16.0",
-        "chalk": "~0.4.0"
-    },
-    "devDependencies": {
-        "mocha": "*"
-    }
+  "dependencies": {
+    "yeoman-generator": "~0.16.0",
+    "chalk": "~0.4.0"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
 }

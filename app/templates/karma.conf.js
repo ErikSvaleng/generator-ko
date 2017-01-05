@@ -7,14 +7,26 @@ module.exports = function (config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine', 'requirejs'],
+        frameworks: ['jasmine'],
 
 
         // list of files / patterns to load in the browser
+        // For specrunner.karma to work, any dependant libraries must be registered
+        // here, so that the karma runner will serve them. If not they will 404.
         files: [
-      'src/app/require.config.js',
-      'test/require.config.js',
-      'test/SpecRunner.karma.js',
+            'src/app/require.config.js',
+            'test/require.config.js',
+            'node_modules/requirejs/require.js',
+            'node_modules/karma-requirejs/lib/adapter.js',
+            {
+                pattern: 'node_modules/knockout/build/output/knockout-latest.js',
+                included: false
+            },
+            {
+                pattern: 'node_modules/requirejs-text/text.js',
+                included: false
+            },
+            'test/SpecRunner.karma.js',
             {
                 pattern: 'src/**/*.js',
                 included: false
@@ -39,7 +51,6 @@ module.exports = function (config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            '**/require.config.js': ['requireglobal']
         },
 
 
@@ -74,10 +85,10 @@ module.exports = function (config) {
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: false
+        singleRun: false,
 
         // Concurrency level
         // how many browser should be started simultaneous
-            concurrency: Infinity
+        concurrency: Infinity
     });
 };

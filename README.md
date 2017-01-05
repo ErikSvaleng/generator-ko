@@ -7,9 +7,9 @@ A Yeoman generator that creates a simple starting point for a knockoutjs SPA.
 
 This generator is a fork of [the fantastic 'generator-ko'](https://github.com/SteveSanderson/generator-ko) by [the brilliant Steven Sanderson](https://github.com/SteveSanderson).
 
-The purpose of this fork was to simplify the original project, reducing dependencies and avoiding any transpilation of javascript. The aim is to be a simple starting point for a knockoutjs single page application that works out of the box. Also trying to provide a tad more documentation, as the original project is best documented in [this video](https://www.youtube.com/watch?v=I1USsIW8aWE)
+The purpose of this fork was to simplify the original project, reducing dependencies and avoiding any transpilation of javascript. What's lef are only static files that will run without a web server. The aim is to be a simple starting point for a knockoutjs single page application that works out of the box. Also trying to provide a tad more documentation, as the original project is best documented in [this video](https://www.youtube.com/watch?v=I1USsIW8aWE)
 
-There is a minuscule underlying preference for users of the [Brackets.io text editor](http://brackets.io/), but it's absolutely not a dependancy.
+There is a minuscule underlying preference for users of the [Brackets.io text editor](http://brackets.io/), but it's absolutely not a dependency.
 
 ## Requirements
 

@@ -1,56 +1,75 @@
 'use strict';
-var util = require('util');
 var yeoman = require('yeoman-generator');
 var fs = require('fs');
 var chalk = require('chalk');
 
 var ComponentGenerator = yeoman.generators.NamedBase.extend({
+    init : function (){
+        console.log('Creating component \'' + this.name + '\'...');
+        this.componentName = this.name;
+        this.dirname = 'src/components/' + this._.dasherize(this.name) + '/';
+        this.filename = this._.dasherize(this.name);
+        this.viewModelClassName = this._.classify(this.name);
+    },
 
-  detectCodeLanguage: function() {
-    this.codeFileExtension = '.js';
-  },
+    template : function (){
+        var codeExtension = '.js';
+        this.copy('view.html', this.dirname + this.filename + '.html');
+        this.copy('viewmodel.js', this.dirname + this.filename + '.js');
+    },
 
-  init: function () {
-    var codeLanguage = 'JavaScript';
-    console.log('Creating component \'' + this.name + '\' (' + codeLanguage + ')...');
-    this.componentName = this.name;
-    this.dirname = 'src/components/' + this._.dasherize(this.name) + '/';
-    this.filename = this._.dasherize(this.name);
-    this.viewModelClassName = this._.classify(this.name);
-  },
+    addComponentRegistration : function (){
+        // Identify file where registration shall be made
+        var startupFile = 'src/app/startup.js';
 
-  template: function () {
-    var codeExtension = '.js';
-    this.copy('view.html', this.dirname + this.filename + '.html');
-    this.copy('viewmodel' + this.codeFileExtension, this.dirname + this.filename + this.codeFileExtension);
-  },
+        //If file exists
+        readIfFileExists.call(this, startupFile, function (existingContents) {
 
-  addComponentRegistration: function() {
-    var startupFile = 'src/app/startup' + this.codeFileExtension;
-    readIfFileExists.call(this, startupFile, function(existingContents) {
-        var existingRegistrationRegex = new RegExp('\\bko\\.components\\.register\\(\s*[\'"]' + this.filename + '[\'"]');
-        if (existingRegistrationRegex.exec(existingContents)) {
-            this.log(chalk.white(this.filename) + chalk.cyan(' is already registered in ') + chalk.white(startupFile));
-            return;
-        }
+            // Check if component with similar name is already registered
+            var existingRegistrationRegex = new RegExp('\\bko\\.components\\.register\\(\s*[\'"]' +
+                this.filename +
+                '[\'"]');
+            // If already registered, give feedback in console
+            if (existingRegistrationRegex.exec(existingContents)) {
+                this.log(chalk.white(this.filename) +
+                    chalk.cyan(' is already registered in ') +
+                    chalk.white(startupFile));
+                return;
+            }
 
-        var token = '// [Scaffolded component registrations will be inserted here. To retain this feature, don\'t remove this comment.]',
-            regex = new RegExp('^(\\s*)(' + token.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + ')', 'm'),
-            modulePath = 'components/' + this.filename + '/' + this.filename,
-            lineToAdd = 'ko.components.register(\'' + this.filename + '\', { require: \'' + modulePath + '\' });',
-            newContents = existingContents.replace(regex, '$1' + lineToAdd + '\n$&');
-        fs.writeFile(startupFile, newContents);
-        this.log(chalk.green('   registered ') + chalk.white(this.filename) + chalk.green(' in ') + chalk.white(startupFile));
+            // Declare token to look for when inserting code
+            var token =
+                    '// [Scaffolded component registrations will be inserted here. To retain this feature, don\'t remove this comment.]',
+                // Create RegExp from token
+                regex = new RegExp('^(\\s*)(' + token.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + ')',
+                    'm'),
+                // Set path to create file
+                modulePath = 'components/' + this.filename + '/' + this.filename,
+                // Define line to add to the list
+                lineToAdd = 'ko.components.register(\'' + this.filename + '\', { require: \'' + modulePath + '\' });',
+                // Replace token-regex with new component registration + the token to retain feature
+                newContents = existingContents.replace(regex, '$1' + lineToAdd + '\n$&');
+            // Write the new content to file
+            fs.writeFile(startupFile, newContents);
+            // Give feedback that file is registered
+            this.log(chalk.green('   registered ') +
+                chalk.white(this.filename) +
+                chalk.green(' in ') +
+                chalk.white(startupFile));
 
-        if (fs.existsSync('gulpfile.js')) {
-            this.log(chalk.magenta('To include in build output, reference ') + chalk.white('\'' + modulePath + '\'') + chalk.magenta(' in ') + chalk.white('gulpfile.js'));
-        }
-    });
-  }
+            // Give gulpfile instructions
+            if (fs.existsSync('gulpfile.js')) {
+                this.log(chalk.magenta('To include in build output, reference ') +
+                    chalk.white('\'' + modulePath + '\'') +
+                    chalk.magenta(' in ') +
+                    chalk.white('gulpfile.js'));
+            }
+        });
+    }
 
 });
 
-function readIfFileExists(path, callback) {
+function readIfFileExists(path, callback){
     if (fs.existsSync(path)) {
         callback.call(this, this.readFileAsString(path));
     }

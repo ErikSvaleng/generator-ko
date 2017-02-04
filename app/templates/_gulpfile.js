@@ -94,3 +94,40 @@ gulp.task('default', ['html', 'js', <% if(usesLess) { %>'less', 'fonts'<% } else
     callback();
     console.log('\nPlaced optimized files in ' + chalk.magenta('dist/\n'));
 });
+
+// Sets up a webserver with live reload for development
+gulp.task('webserver', function () {
+    gulp.src('')
+        .pipe(webserver({
+            livereload : true,
+            port : 8050,
+            directoryListing : true,
+            open : 'http://localhost:8050/src/index.html'
+        }));
+});
+<% if(includeTests){ %>
+// Runs the intern client, that runs through all unit tests
+gulp.task('intern', function (done) {
+    var command = [
+            './node_modules/intern/client.js',
+            'config=intern'
+    ],
+        process = child.spawn('node', command, {
+            stdio : 'inherit'
+        });
+
+    process.on('close', function (code) {
+        if (code) {
+            done(new Error('Intern exited with code ' + code));
+        }
+        else {
+            done();
+        }
+    });
+});
+
+// Watches all source and test files and runs intern every time a file is saved
+gulp.task('test', function () {
+    gulp.watch(['./src/**/*', './test/**/*'], ['intern']);
+});
+<% } %>

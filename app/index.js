@@ -1,5 +1,4 @@
 'use strict';
-var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
@@ -62,7 +61,7 @@ var KoGenerator = yeoman.generators.Base.extend({
       if (this.includeTests) {
           // Set up tests
           this._processDirectory('test', 'test');
-          this.copy('karma.conf.js');
+          this.copy('intern.js');
       }
   },
 

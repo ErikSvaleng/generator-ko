@@ -1,16 +1,17 @@
-define(['knockout', './router'], function(ko, router) {
+define(['knockout', './router', './components.config'], function (ko, router, components) {
 
-  // Components can be packaged as AMD modules, such as the following:
-  ko.components.register('nav-bar', { require: 'components/nav-bar/nav-bar' });
-  ko.components.register('home-page', { require: 'components/home-page/home' });
+    // Register all page-components in knockout
+    components.pages.forEach(register);
 
-  // ... or for template-only components, you can just point to a .html file directly:
-  ko.components.register('about-page', {
-    template: { require: 'text!components/about-page/about.html' }
-  });
+    // Register all regular components
+    components.components.forEach(register);
 
-  // [Scaffolded component registrations will be inserted here. To retain this feature, don't remove this comment.]
 
-  // Start the application
-  ko.applyBindings({ route: router.currentRoute });
+    function register(component){
+        ko.components.register(component.name, { require : component.path});
+    }
+    // [Scaffolded component registrations will be inserted here. To retain this feature, don't remove this comment.]
+
+    // Start the application
+    ko.applyBindings({ route : router.currentRoute });
 });

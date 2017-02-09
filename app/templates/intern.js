@@ -55,7 +55,7 @@ define({
     },
 
     // Unit test suite(s) to run in each browser
-    suites: ['test/components/home' /* 'myPackage/tests/foo', 'myPackage/tests/bar' */],
+    suites: ['test/pages/home' /* 'myPackage/tests/foo', 'myPackage/tests/bar' */],
 
     // Functional test suite(s) to execute against each browser once unit tests are completed
     functionalSuites: [/* 'myPackage/tests/functional' */],

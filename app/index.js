@@ -33,7 +33,7 @@ var KoGenerator = yeoman.generators.Base.extend({
     }, {
         type: 'confirm',
         name: 'includeTests',
-        message: 'Do you want to include automated tests, using Jasmine and Karma?',
+        message: 'Do you want to include automated tests, using the Intern testing framework?',
         default: true
     }, {
         type: 'list',

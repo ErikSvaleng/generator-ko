@@ -5,9 +5,9 @@ var chalk = require('chalk');
 
 var ComponentGenerator = yeoman.generators.NamedBase.extend({
     init : function (){
-        console.log('Creating component \'' + this.name + '\'...');
+        console.log('Creating page \'' + this.name + '\'...');
         this.componentName = this.name;
-        this.dirname = 'src/components/' + this._.dasherize(this.name) + '/';
+        this.dirname = 'src/pages/' + this._.dasherize(this.name) + '/';
         this.filename = this._.dasherize(this.name);
         this.viewModelClassName = this._.classify(this.name);
     },
@@ -37,12 +37,12 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
 
             // Declare token to look for when inserting code
             var token =
-                    '// [Scaffolded components will be inserted here. To retain this feature, don\'t remove this comment.]',
+                    '// [Scaffolded pages will be inserted here. To retain this feature, don\'t remove this comment.]',
                 // Create RegExp from token
                 regex = new RegExp('^(\\s*)(' + token.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + ')',
                     'm'),
                 // Set path to create file
-                modulePath = 'components/' + this.filename + '/' + this.filename,
+                modulePath = 'pages/' + this.filename + '/' + this.filename,
                 // Define line to add to the list
                 lineToAdd = '{ name: \'' + this.filename + '\', path: \'' + modulePath + '\' },',
                 // Replace token-regex with new component registration + the token to retain feature

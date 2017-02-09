@@ -1,5 +1,5 @@
 // Node modules
-var fs = require('fs'), vm = require('vm'), merge = require('deeply'), chalk = require('chalk'), es = require('event-stream');
+var fs = require('fs'), vm = require('vm'), merge = require('deeply'), chalk = require('chalk'), es = require('event-stream')<% if(includeTests){ %>, child = require('child_process')<% } %>;
 
 // Gulp and plugins
 var gulp = require('gulp'), rjs = require('gulp-requirejs-bundler'), concat = require('gulp-concat'), clean = require('gulp-clean'),
@@ -17,8 +17,8 @@ var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require
         include: [
             'requireLib',
             'components/nav-bar/nav-bar',
-            'components/home-page/home',
-            'text!components/about-page/about.html'
+            'pages/home/home',
+            'pages/about/about'
         ],
         insertRequire: ['app/startup'],
         bundles: {
@@ -26,6 +26,7 @@ var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require
             // above, and group them into bundles here.
             // 'bundle-name': [ 'some/module', 'another/module' ],
             // 'another-bundle-name': [ 'yet-another-module' ]
+            // 'about-page': [ 'pages/about/about' ]
         }
     });
 

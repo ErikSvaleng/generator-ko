@@ -48,7 +48,8 @@ define({
         paths: {
             // Libraries
             "home": "src/pages/home/home",
-            "text": "node_modules/requirejs-text/text"
+            "text": "node_modules/requirejs-text/text",
+            "knockout": "../node_modules/knockout/build/output/knockout-latest"
         }
         // Packages that should be registered with the loader in each testing environment
         //packages : [{ name : 'myPackage', location : '.' }]

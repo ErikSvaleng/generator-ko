@@ -128,7 +128,18 @@ gulp.task('intern', function (done) {
 });
 
 // Watches all source and test files and runs intern every time a file is saved
-gulp.task('test', function () {
+gulp.task('test', ['intern'], function () {
     gulp.watch(['./src/**/*', './test/**/*'], ['intern']);
+});
+
+// Fires up the intern web-client in your browser. NB! BEWARE OF BROWSER CACHING
+gulp.task('intern-web', function () {
+    gulp.src('')
+        .pipe(webserver({
+            livereload: true,
+            port: 8080,
+            directoryListing: true,
+            open: 'http://localhost:8080/node_modules/intern/client.html?config=intern'
+        }));
 });
 <% } %>

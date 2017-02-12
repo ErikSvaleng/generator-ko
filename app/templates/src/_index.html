@@ -3,8 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><%= longName %></title>
-    <!-- build:css -->
+      <title><%= longName %></title>
+      <% if(!usesLess) {%>
+      <link href="../node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+      <% } %>
+      <!-- build:css -->
       <link href="css/styles.css" rel="stylesheet">
     <!-- endbuild -->
     <!-- build:js -->

@@ -11,6 +11,7 @@
     "gulp-replace": "^0.5.4",
     "gulp-requirejs-bundler": "^0.1.1",
     "gulp-uglify": "^2.0.0",
+    "gulp-webserver": "^0.9.1",
 <% if(includeTests) { %>
     "intern": "^3.4.2",
 <% } %>

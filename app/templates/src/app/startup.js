@@ -9,7 +9,7 @@ define(['knockout', './router', './components.config'], function (ko, router, co
 
     function register(component){
         ko.components.register(component.name, { require : component.path});
-    }
+    };
     // [Scaffolded component registrations will be inserted here. To retain this feature, don't remove this comment.]
 
     // Start the application

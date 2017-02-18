@@ -46,11 +46,7 @@ gulp.task('less', function(){
         .pipe(concat('css.css'))
         .pipe(gulp.dest('./dist/'));
 });
- // Moves the bootstrap fonts to the dist-folder
-gulp.task('fonts', function(){
-    return gulp.src('./node_modules/bootstrap/fonts/*', { base: './node_modules/bootstrap/components-bootstrap/' })
-        .pipe(gulp.dest('./dist/fonts'));
-});
+
 
 gulp.task('devLess', function () {
    return gulp.src('./src/less/styles.less')
@@ -63,25 +59,32 @@ gulp.task('watch', function(){
     gulp.watch('./src/less/styles.less', ['devLess']);
 });
 <% } else { %>
-    // Concatenates CSS files, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
+    // Concatenates CSS files, rewrites relative paths to Bootstrap fonts
 gulp.task('css', function () {
-    var bowerCss = gulp.src('./node_modules/bootstrap/dist/css/bootstrap.min.css')
-            .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/')),
-        appCss = gulp.src('src/css/*.css'),
-        combinedCss = es.concat(bowerCss, appCss).pipe(concat('css.css')),
-        fontFiles = gulp.src('./node_modules/bootstrap/fonts/*', { base: './node_modules/bootstrap/components-bootstrap/' });
-    return es.concat(combinedCss, fontFiles)
+    //Array of all CSS files needed
+    var appCss = gulp.src([
+        './node_modules/bootstrap/dist/css/bootstrap.min.css',
+        './src/css/*.css'
+    ])
+    .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/'));
+    var combinedCss = es.concat(appCss).pipe(concat('css.css'));
+    return es.concat(combinedCss)
         .pipe(gulp.dest('./dist/'));
 });
 <% } %>
 
+// Moves the bootstrap fonts to the dist-folder
+gulp.task('fonts', function(){
+   return gulp.src('./node_modules/bootstrap/fonts/*', { base: './node_modules/bootstrap/components-bootstrap/' })
+       .pipe(gulp.dest('./dist/fonts'));
+});
 
 // Copies index.html, replacing <script> and <link> tags to reference production URLs
 gulp.task('html', function() {
     return gulp.src('./src/index.html')
         .pipe(htmlreplace({
-            'css': 'css.css',
-            'js': 'scripts.js'
+            'css': 'css.css?' + Date.now(),
+            'js': 'scripts.js?' + Date.now()
         }))
         .pipe(gulp.dest('./dist/'));
 });
@@ -92,7 +95,7 @@ gulp.task('clean', function() {
         .pipe(clean());
 });
 
-gulp.task('default', ['html', 'js', <% if(usesLess) { %>'less', 'fonts'<% } else { %>'css'<% } %>], function(callback) {
+gulp.task('default', ['html', 'js', <% if(usesLess) { %>'less', <% } else { %>'css', <% } %> 'fonts'], function(callback) {
     callback();
     console.log('\nPlaced optimized files in ' + chalk.magenta('dist/\n'));
 });

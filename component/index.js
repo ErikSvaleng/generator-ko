@@ -24,7 +24,7 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
         //If file exists
         readIfFileExists.call(this, componentConfig, function (existingContents) {
 
-            
+
             // Check if component with similar name is already registered
             var existingRegistrationRegex = new RegExp('\s*{\s*name\s*:\s*[\'"]' + this.filename + '[\'"]\s*,');
             // If already registered, give feedback in console
@@ -33,7 +33,7 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
                     chalk.cyan(' is already registered in ') +
                     chalk.white(componentConfig));
                 return;
-            }
+            }a
 
             // Declare token to look for when inserting code
             var token =
@@ -44,7 +44,7 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
                 // Set path to create file
                 modulePath = 'components/' + this.filename + '/' + this.filename,
                 // Define line to add to the list
-                lineToAdd = '{ name: \'' + this.filename + '\', path: \'' + modulePath + '\' },',
+                lineToAdd = '\n\t\t{ name: \'' + this.filename + '\', path: \'' + modulePath + '\' },',
                 // Replace token-regex with new component registration + the token to retain feature
                 newContents = existingContents.replace(regex, '$&$1' + lineToAdd);
             // Write the new content to file

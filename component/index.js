@@ -33,7 +33,7 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
                     chalk.cyan(' is already registered in ') +
                     chalk.white(componentConfig));
                 return;
-            }a
+            }
 
             // Declare token to look for when inserting code
             var token =

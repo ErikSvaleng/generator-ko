@@ -48,7 +48,7 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
                 // Replace token-regex with new component registration + the token to retain feature
                 newContents = existingContents.replace(regex, '$&$1' + lineToAdd);
             // Write the new content to file
-            fs.writeFile(componentConfig, newContents);
+            fs.writeFileSync(componentConfig, newContents);
             // Give feedback that file is registered
             this.log(chalk.green('   registered ') +
                 chalk.white(this.filename) +
